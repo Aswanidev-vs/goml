@@ -716,7 +716,7 @@ goml pretty config.goml
 
 # Live Demo
 
-- [Budget Tracker](examples/budget-tracker/) - Web app using GOML as data store
-- [Website](website/) - GOML marketing site with playground
+- [https://aswanidev-vs.github.io/goml/budget-tracker/index.html](examples/budget-tracker/) - Web app using GOML as data store
+- [https://aswanidev-vs.github.io/goml/](website/) - GOML marketing site with playground
 
 ---
