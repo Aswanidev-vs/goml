@@ -1,0 +1,51 @@
+{
+  "name": "goml",
+  "displayName": "GOML - Go Markup Language",
+  "description": "Syntax highlighting and language support for GOML files",
+  "version": "1.0.0",
+  "publisher": "goml-lang",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "keywords": [
+    "goml",
+    "go markup language",
+    "configuration",
+    "data format"
+  ],
+  "icon": "icon.png",
+  "contributes": {
+    "languages": [
+      {
+        "id": "goml",
+        "aliases": [
+          "GOML",
+          "goml"
+        ],
+        "extensions": [
+          ".goml"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "goml",
+        "scopeName": "source.goml",
+        "path": "./syntaxes/goml.tmLanguage.json",
+        "embeddedLanguages": {}
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "echo 'No build step needed'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/goml-lang/goml"
+  },
+  "license": "MIT"
+}
