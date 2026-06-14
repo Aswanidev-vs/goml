@@ -111,40 +111,43 @@ function toGOML(data, indent = 0) {
     const pad = '  '.repeat(indent);
     let output = '';
 
-    if (data === null) return 'null';
+    if (data === null) return '~';
     if (typeof data === 'boolean') return data.toString();
     if (typeof data === 'number') return data.toString();
     if (typeof data === 'string') return needsQuote(data) ? `"${data}"` : data;
     if (Array.isArray(data)) {
         if (data.length === 0) return '[]';
-        if (data.every(x => typeof x !== 'object')) {
-            return '[' + data.join(', ') + ']';
+        if (data.every(x => typeof x !== 'object' || x === null)) {
+            return '[' + data.map(v => toGOML(v, indent)).join(', ') + ']';
         }
         output += '[\n';
         data.forEach((item, i) => {
             output += pad + '  {\n';
             Object.entries(item).forEach(([k, v]) => {
-                if (typeof v === 'object' && v !== null && !Array.isArray(v)) {
-                    output += pad + '    ' + k + ' {\n';
-                    Object.entries(v).forEach(([k2, v2]) => {
-                        output += pad + '      ' + k2 + ' = ' + toGOML(v2, indent + 4) + '\n';
-                    });
-                    output += pad + '    }\n';
-                } else {
-                    output += pad + '    ' + k + ' = ' + toGOML(v, indent + 2) + '\n';
-                }
+                output += pad + '    ' + k + ' = ' + toGOML(v, indent + 2) + '\n';
             });
-            output += pad + '  }' + (i < data.length - 1 ? '\n' : '\n');
+            output += pad + '  }';
+            if (i < data.length - 1) output += ',';
+            output += '\n';
         });
         output += pad + ']';
         return output;
     }
     if (typeof data === 'object') {
-        const keys = Object.keys(data).sort();
+        const keys = Object.keys(data);
         if (keys.length === 0) return '{}';
         output += '{\n';
         keys.forEach(k => {
-            output += pad + '  ' + k + ' = ' + toGOML(data[k], indent + 1) + '\n';
+            const val = data[k];
+            if (typeof val === 'object' && val !== null && !Array.isArray(val)) {
+                output += pad + '  ' + k + ' {\n';
+                Object.entries(val).forEach(([k2, v2]) => {
+                    output += pad + '    ' + k2 + ' = ' + toGOML(v2, indent + 2) + '\n';
+                });
+                output += pad + '  }\n';
+            } else {
+                output += pad + '  ' + k + ' = ' + toGOML(val, indent + 1) + '\n';
+            }
         });
         output += pad + '}';
         return output;
@@ -157,6 +160,39 @@ function needsQuote(s) {
     if (s === 'true' || s === 'false' || s === 'null') return true;
     if (/^[\d.]/.test(s)) return true;
     return /[\s,{}[\]="']/.test(s);
+}
+
+// ============================================================
+// GOML Syntax Highlighter
+// ============================================================
+
+function highlightGOML(str) {
+    return str.replace(/(["'])(?:(?=(\\?))\2.)*?\1|#.*|\/\/.*|\b(true|false|null)\b|(\b\d+\.?\d*\b)|(\w+)(?=\s*[=\[{])|(\w+)(?=\s*\{)/g, function(match, quote, escape, bool, num, key, blockKey) {
+        if (quote) return `<span style="color:#86efac">${match}</span>`;
+        if (match.startsWith('#') || match.startsWith('//')) return `<span style="color:#6b7280">${match}</span>`;
+        if (bool || match === 'null') return `<span style="color:#c4b5fd">${match}</span>`;
+        if (num) return `<span style="color:#fca5a5">${match}</span>`;
+        if (key || blockKey) return `<span style="color:#7dd3fc">${match}</span>`;
+        return match;
+    });
+}
+
+function highlightJSON(str) {
+    return str.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+        let cls = '#fca5a5';
+        if (/^"/.test(match)) {
+            if (/:$/.test(match)) {
+                cls = '#7dd3fc';
+            } else {
+                cls = '#86efac';
+            }
+        } else if (/true|false/.test(match)) {
+            cls = '#c4b5fd';
+        } else if (/null/.test(match)) {
+            cls = '#c4b5fd';
+        }
+        return `<span style="color:${cls}">${match}</span>`;
+    });
 }
 
 // ============================================================
@@ -337,9 +373,9 @@ function renderCategories() {
 function renderPreview() {
     const el = document.getElementById('dataPreview');
     if (currentPreview === 'goml') {
-        el.textContent = toGOML(data);
+        el.innerHTML = highlightGOML(toGOML(data));
     } else {
-        el.textContent = JSON.stringify(data, null, 2);
+        el.innerHTML = highlightJSON(JSON.stringify(data, null, 2));
     }
 }
 

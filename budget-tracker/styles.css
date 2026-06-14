@@ -329,9 +329,9 @@ body {
 .goml-preview {
     padding: 20px;
     font-family: var(--mono);
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     line-height: 1.8;
-    color: var(--text2);
+    color: var(--text);
     max-height: 300px;
     overflow: auto;
     white-space: pre-wrap;
