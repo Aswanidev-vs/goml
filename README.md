@@ -1,6 +1,12 @@
-# GOML - Go Markup Language
 
-A simple, human-readable data format with **three syntax styles** for different use cases.
+<h1 align="center">GOML - Go Markup Language</h1>
+
+<p align="center">
+  <img src="assets/logo.svg" alt="GOML Logo" width="200">
+</p>
+<p align="center">
+  A simple, human-readable data format with <strong>three syntax styles</strong> for different use cases.
+</p>
 
 ## Why GOML?
 
